@@ -1,35 +1,36 @@
 import { test, expect } from '@playwright/test';
 import { setTimeout } from 'timers/promises';
 import { readFileSync } from 'fs';
+import { AppMainPage } from './pages';
 
 test('navigation to login page', async ({ page, context }) => {
   // 1. Login to Evernote:
   // I have skip login part, just think that creating authorization for local app is overkill
   // app saves notes to localstorage, that is enouth to close and reload the page with state persisted
-  await page.goto('/');
-  await page.waitForLoadState('domcontentloaded');
+  const mainPage = new AppMainPage(page);
+  await mainPage.goto();
 
   // 2. Create a New Note:
+  // AND
+  // 3. Save the Note:
   const noteText = readFileSync('./tests/fixtures/note.txt', 'utf-8');
   const noteTitle = 'my note';
-  await page.locator('#new-note-title').fill(noteTitle);
-  await page.locator('#new-text-area').fill(noteText);
+  await mainPage.createNewNote(noteTitle, noteText);
 
-  // 3. Save the Note:
-  await page.locator('#new-note-submit').click();
-  await expect(page.locator('#completed h3.title-article')).toHaveText(noteTitle);
-  await expect(page.locator('#completed p.text-article')).toHaveText(noteText);
-  await expect(page).toHaveScreenshot({ fullPage: true });
+  await expect(mainPage.noteTitle).toHaveText(noteTitle);
+  await expect(mainPage.noteText).toHaveText(noteText);
+  await expect(mainPage.page).toHaveScreenshot({ fullPage: true });
 
   // 4. Close and Reopen the Page:
-  await page.close();
+  await mainPage.page.close();
   await setTimeout(1_000);
 
-  const pageAfterReload = await context.newPage();
-  await pageAfterReload.goto('/');
+  const newPage = await context.newPage();
+  const mainPageAfterReload = new AppMainPage(newPage);
+  await mainPageAfterReload.goto();
 
   // 5. Verify the Note's Persistence and Format:
-  await expect(pageAfterReload.locator('#completed h3.title-article')).toHaveText(noteTitle);
-  await expect(pageAfterReload.locator('#completed p.text-article')).toHaveText(noteText);
-  await expect(pageAfterReload).toHaveScreenshot({ fullPage: true });
+  await expect(mainPageAfterReload.noteTitle).toHaveText(noteTitle);
+  await expect(mainPageAfterReload.noteText).toHaveText(noteText);
+  await expect(mainPageAfterReload.page).toHaveScreenshot({ fullPage: true });
 });

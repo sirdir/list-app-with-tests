@@ -56,6 +56,10 @@ But here is the command to do it locally:
 npm run test-update
 ```
 
+### Pageobject pattern
+
+Although we have only one page - thje main page (login is skipped as a step), but I have added pageobject patter because I do see that it provide more structure to the code and it becomes more readable. Page(s) are located at `./tests/pages/` folder. For more info please visit official docs https://playwright.dev/docs/pom
+
 ### How running test works under the hood.
 
 By running `npm run test` playwright firstly will start webserver for our local reactjs app on port 3000 and after that tests will be run agains this app.
