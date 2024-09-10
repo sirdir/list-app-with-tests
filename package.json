@@ -12,7 +12,9 @@
   "scripts": {
     "prettier-fix": "npx prettier . --write",
     "start": "react-scripts start",
-    "test": "npx playwright test"
+    "test": "npx playwright test --headed",
+    "test-update": "npx playwright test --headed --update-snapshots",
+    "report": "npx playwright show-report"
   },
   "browserslist": {
     "production": [

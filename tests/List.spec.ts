@@ -7,6 +7,7 @@ test('navigation to login page', async ({ page, context }) => {
   // I have skip login part, just think that creating authorization for local app is overkill
   // app saves notes to localstorage, that is enouth to close and reload the page with state persisted
   await page.goto('/');
+  await page.waitForLoadState('domcontentloaded');
 
   // 2. Create a New Note:
   const noteText = readFileSync('./tests/fixtures/note.txt', 'utf-8');
@@ -28,7 +29,7 @@ test('navigation to login page', async ({ page, context }) => {
   await pageAfterReload.goto('/');
 
   // 5. Verify the Note's Persistence and Format:
-  await expect(pageAfterReload.locator('#completed h3.title-article')).toHaveText('my note');
+  await expect(pageAfterReload.locator('#completed h3.title-article')).toHaveText(noteTitle);
   await expect(pageAfterReload.locator('#completed p.text-article')).toHaveText(noteText);
   await expect(pageAfterReload).toHaveScreenshot({ fullPage: true });
 });
