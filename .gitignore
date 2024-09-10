@@ -25,4 +25,5 @@ yarn-error.log*
 # playwtight
 test-results
 playwright-report
-image.png
+**.png
+!tests/*-snapshots/*.png

@@ -54,7 +54,7 @@ body {
 
 .main-container {
   display: grid;
-  grid-template: repeat(2, 33%) 5% / repeat(3, 30%);
+  grid-template: repeat(2, 33%) 5% / repeat(2, 50%);
   justify-content: space-around;
 }
 

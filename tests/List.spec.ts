@@ -1,27 +1,34 @@
 import { test, expect } from '@playwright/test';
+import { setTimeout } from 'timers/promises';
+import { readFileSync } from 'fs';
 
-test('navigation to login page', async ({ page }) => {
+test('navigation to login page', async ({ page, context }) => {
+  // 1. Login to Evernote:
+  // I have skip login part, just think that creating authorization for local app is overkill
+  // app saves notes to localstorage, that is enouth to close and reload the page with state persisted
   await page.goto('/');
-  await page.screenshot({ path: 'image.png', fullPage: true });
 
-  // await page.getByRole('button', { name: 'Accept all cookies' }).click();
-  // await page.getByRole('navigation').getByRole('link', { name: 'Log in' }).click();
+  // 2. Create a New Note:
+  const noteText = readFileSync('./tests/fixtures/note.txt', 'utf-8');
+  const noteTitle = 'my note';
+  await page.locator('#new-note-title').fill(noteTitle);
+  await page.locator('#new-text-area').fill(noteText);
 
-  // await expect(page).toHaveURL('https://accounts.evernote.com/login');
-  // await page.locator('#email').pressSequentially(process.env.TEST_USER!);
-  // const continueButton = page.getByRole('button', { name: 'Continue', exact: true });
-  // await expect(continueButton).toBeEnabled();
-  // await continueButton.click();
+  // 3. Save the Note:
+  await page.locator('#new-note-submit').click();
+  await expect(page.locator('#completed h3.title-article')).toHaveText(noteTitle);
+  await expect(page.locator('#completed p.text-article')).toHaveText(noteText);
+  await expect(page).toHaveScreenshot({ fullPage: true });
 
-  // await expect(page).toHaveURL('https://accounts.evernote.com/login-with-password');
+  // 4. Close and Reopen the Page:
+  await page.close();
+  await setTimeout(1_000);
 
-  // await page.getByPlaceholder('Password').pressSequentially(process.env.TEST_PASSWORD!);
-  // await page.getByRole('img').nth(3).click();
-  // await expect(continueButton).toBeEnabled();
+  const pageAfterReload = await context.newPage();
+  await pageAfterReload.goto('/');
 
-  // await continueButton.click();
-
-  // await page.waitForLoadState('domcontentloaded');
-  // await page.waitForTimeout(1_000);
-  // await expect(page).toHaveURL('https://www.evernote.com/client/web');
+  // 5. Verify the Note's Persistence and Format:
+  await expect(pageAfterReload.locator('#completed h3.title-article')).toHaveText('my note');
+  await expect(pageAfterReload.locator('#completed p.text-article')).toHaveText(noteText);
+  await expect(pageAfterReload).toHaveScreenshot({ fullPage: true });
 });
