@@ -6,9 +6,17 @@ installed nodejs - https://nodejs.org/en current LTS is v20.17.0, but 18 will do
 
 Just run this two instructions
 
-`npm install` - install all dependencies
+Install all dependencies:
 
-`npx playwright install --with-deps chromium` - install browser(s) needed by playwright and insure that mandatory system dependencies are installed as well. Will take a while to download browser binaries.
+```bash
+npm install
+```
+
+Install browser(s) needed by playwright and insure that mandatory system dependencies are installed as well. Will take a while to download browser binaries:
+
+```bash
+npx playwright install --with-deps chromium
+```
 
 # HOW TO USE
 
@@ -25,6 +33,8 @@ But for sucesefull build you have to do it manually:
 ```bash
 npm run report
 ```
+
+There can be initial failures if tests will be run firstly on other system than `win` or `linux`, I have explained why ower here ["update reference screenshots"](#update-reference-screenshots)
 
 ## SIDE NOTES
 
@@ -46,7 +56,9 @@ To see failed build:
 
 By default tests are always running in headed mode, done it for the sace of test assignment visibility.
 
-### update reference screenshots
+### <a name="update-reference-screenshots"></a> Update reference screenshots
+
+At the moment of writing repo have screenshots only for `linux` and `windows`. If tests will be run on `macOs` or other system, first run will fail with error `Error: A snapshot doesn't exist a /path/la/la/la/some.png` but it will produce new screenshots that are not committed and consequitive tests runs will work fine.
 
 Existing refreference screenshots can change, due to source code changes, so they as well can be updated. Usually for that purposes on CI there are separate conditional step, where person who run the test is responsible to generate new refference snapshots.
 
